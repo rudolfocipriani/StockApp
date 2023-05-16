@@ -248,13 +248,20 @@ if data.shape[0] > 2 and data.isna().sum().sum() == 0:
 
     # Make predictions for the future dates
     forecast = make_predictions(model, future_dates, lagged_features, period)
-    
-    fig, ax = plt.subplots(figsize=(16, 9))
-    ax.plot(prepared_data.index, prepared_data['Close'], label='Historical Close Price')
-    ax.plot(forecast['Date'], forecast['Close'], label='Forecast Close Price')
-    ax.legend(loc='best')
-    ax.set_title('Stock Price Forecast (Random Forest Regressor)')
-    st.pyplot(fig)
+
+    # Prepare data for the plot
+    historical_data = go.Scatter(x=prepared_data.index, y=prepared_data['Close'], mode='lines', name='Historical Close Price')
+    forecast_data = go.Scatter(x=forecast['Date'], y=forecast['Close'], mode='lines', name='Forecast Close Price')
+
+    # Create the plot
+    fig = go.Figure(data=[historical_data, forecast_data])
+
+    # Set title
+    fig.update_layout(title='Stock Price Forecast (Random Forest Regressor)')
+
+    # Display the plot
+    st.plotly_chart(fig)
 
 else:
-    st.write(f"Insufficient or invalid data for: {ticker} from {START}. Please try another ticker or date range.")
+    st.write("End date must fall after start date.")
+
